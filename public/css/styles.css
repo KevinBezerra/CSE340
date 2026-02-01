@@ -130,3 +130,69 @@ h1 { margin-top: 20px; }
     flex: 1;
   }
 }
+
+#inv-display {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+  display: flex;
+  flex-direction: column;
+}
+
+#inv-display li {
+  margin-bottom: 2em;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  list-style-type: none;
+  flex: 1 1 auto;
+  text-align: center;
+  background-color: #eee;
+}
+
+#inv-display li img {
+  max-width: 100%;
+  height: auto;
+}
+
+.namePrice {
+  padding: 0 0.5em 0.5em;
+  background-color: #fff;
+  border-radius: 0 0 10px 10px;
+}
+
+@media screen and (min-width: 600px) {
+  #inv-display {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-around;
+  }
+  
+  #inv-display li {
+    max-width: 250px;
+    margin: 10px;
+  }
+}
+
+#vehicle-detail {
+    display: flex;
+    flex-direction: column;
+    margin: 20px;
+    gap: 20px;
+}
+
+#vehicle-detail img {
+    width: 100%;
+    max-width: 600px;
+}
+
+@media screen and (min-width: 768px) {
+    #vehicle-detail {
+        flex-direction: row;
+    }
+    #vehicle-detail img {
+        width: 50%;
+    }
+    .details {
+        width: 50%;
+    }
+}
