@@ -15,9 +15,34 @@ router.post("/register", regValidate.registrationRules(), regValidate.checkRegDa
 // Process the login request
 router.post(
   "/login",
-  (req, res) => {
-    res.status(200).send('login process')
-  }
+  regValidate.loginRules(),
+  regValidate.checkLoginData,
+  utilities.handleErrors(accountController.accountLogin)
+)
+
+// Route to build account management view
+router.get("/", utilities.checkLogin, utilities.handleErrors(accountController.buildManagement))
+
+// Route to logout
+router.get("/logout", utilities.handleErrors(accountController.accountLogout))
+
+// Route to build the "Update Account" view
+router.get("/update/:accountId", utilities.handleErrors(accountController.buildAccountUpdate))
+
+// Process the Account Update
+router.post(
+  "/update", 
+  regValidate.updateAccountRules(), 
+  regValidate.checkUpdateData, 
+  utilities.handleErrors(accountController.updateAccount)
+)
+
+// Process the Password Change
+router.post(
+  "/change-password", 
+  regValidate.changePasswordRules(), 
+  regValidate.checkPasswordData, 
+  utilities.handleErrors(accountController.changePassword)
 )
 
 module.exports = router;

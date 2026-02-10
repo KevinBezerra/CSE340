@@ -29,7 +29,7 @@ validate.checkClassificationData = async (req, res, next) => {
       errors,
       title: "Add New Classification",
       nav,
-      classification_name, // Make it sticky
+      classification_name, 
     })
     return
   }
@@ -46,7 +46,6 @@ validate.inventoryRules = () => {
       .isLength({ min: 1 })
       .withMessage("Please select a classification."),
 
-    // make is required
     body("inv_make")
       .trim()
       .isLength({ min: 3 })
@@ -61,13 +60,11 @@ validate.inventoryRules = () => {
       .isInt({ min: 1900, max: 2099 })
       .withMessage("Please provide a valid 4-digit year."),
 
-    // description is required
     body("inv_description")
       .trim()
       .isLength({ min: 1 })
       .withMessage("Please provide a description."),
 
-    // price is required, must be numeric
     body("inv_price")
       .trim()
       .isFloat({ min: 0 })
@@ -94,7 +91,6 @@ validate.checkInventoryData = async (req, res, next) => {
   errors = validationResult(req)
   if (!errors.isEmpty()) {
     let nav = await utilities.getNav()
-    // Rebuild the classification list so the dropdown is sticky
     let classificationList = await utilities.buildClassificationList(classification_id)
     
     res.render("inventory/add-inventory", {
@@ -112,6 +108,39 @@ validate.checkInventoryData = async (req, res, next) => {
       inv_miles,
       inv_color,
       classification_id,
+    })
+    return
+  }
+  next()
+}
+
+/* ******************************
+ * Check data and return errors or continue to edit inventory
+ * ***************************** */
+validate.checkUpdateData = async (req, res, next) => {
+  const { inv_id, inv_make, inv_model, inv_year, inv_description, inv_image, inv_thumbnail, inv_price, inv_miles, inv_color, classification_id } = req.body
+  let errors = []
+  errors = validationResult(req)
+  if (!errors.isEmpty()) {
+    let nav = await utilities.getNav()
+    const classificationSelect = await utilities.buildClassificationList(classification_id)
+    const itemName = `${inv_make} ${inv_model}`
+    res.render("inventory/edit-inventory", {
+      title: "Edit " + itemName,
+      nav,
+      classificationSelect: classificationSelect,
+      errors,
+      inv_id,
+      inv_make,
+      inv_model,
+      inv_year,
+      inv_description,
+      inv_image,
+      inv_thumbnail,
+      inv_price,
+      inv_miles,
+      inv_color,
+      classification_id
     })
     return
   }

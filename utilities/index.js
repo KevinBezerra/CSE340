@@ -1,4 +1,6 @@
 const invModel = require("../models/inventory-model")
+const jwt = require("jsonwebtoken")
+require("dotenv").config()
 const Util = {}
 
 /* ************************
@@ -108,10 +110,66 @@ Util.buildClassificationList = async function (classification_id = null) {
 
 /* ****************************************
  * Middleware For Handling Errors
- * Wrap other function in this for 
- * General Error Handling
  **************************************** */
 Util.handleErrors = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next)
 
-// Export at the END so all functions are included
+/* ****************************************
+* Middleware to check token validity
+**************************************** */
+Util.checkJWTToken = (req, res, next) => {
+  if (req.cookies.jwt) {
+   jwt.verify(
+    req.cookies.jwt,
+    process.env.ACCESS_TOKEN_SECRET,
+    function (err, accountData) {
+     if (err) {
+      req.flash("Please log in")
+      res.clearCookie("jwt")
+      return res.redirect("/account/login")
+     }
+     res.locals.accountData = accountData
+     res.locals.loggedin = 1
+     next()
+    })
+  } else {
+   next()
+  }
+ }
+
+
+ /* ****************************************
+* Check Login
+* ************************************ */
+Util.checkLogin = (req, res, next) => {
+  if (res.locals.loggedin) {
+    next()
+  } else {
+    req.flash("notice", "Please log in.")
+    return res.redirect("/account/login")
+  }
+ }
+
+ /* ****************************************
+ * Check Account Type
+ * ************************************ */
+Util.checkAccountType = (req, res, next) => {
+  // 1. Check if user is logged in (this flag is set by checkJWTToken)
+  if (res.locals.loggedin) {
+    const account_type = res.locals.accountData.account_type
+    
+    // 2. Check if they are authorized
+    if (account_type == "Employee" || account_type == "Admin") {
+      next() // Let them pass
+    } else {
+      // 3. Kick them out if they are just a Client
+      req.flash("notice", "You do not have permission to access that resource.")
+      return res.redirect("/account/login")
+    }
+  } else {
+    // 4. Kick them out if not logged in at all
+    req.flash("notice", "Please log in.")
+    return res.redirect("/account/login")
+  }
+}
+
 module.exports = Util
