@@ -1,0 +1,59 @@
+<% if (title) { %>
+    <h1><%= title %></h1>
+    <% } else {
+      res.redirect('/')
+    } %>
+
+<%- messages() %>
+
+<div class="form-container">
+  <form id="updateForm" action="/inv/update" method="post">
+    <fieldset>
+      <label class="top">Classification*
+        <%- classificationSelect %>
+      </label>
+
+      <label class="top">Make*
+        <input type="text" name="inv_make" required placeholder="Min of 3 characters" value="<%= locals.inv_make %>">
+      </label>
+      
+      <label class="top">Model*
+        <input type="text" name="inv_model" required placeholder="Min of 3 characters" value="<%= locals.inv_model %>">
+      </label>
+      
+      <label class="top">Description*
+        <textarea name="inv_description" required rows="5" placeholder="Description of vehicle"><%= locals.inv_description %></textarea>
+      </label>
+      
+      <label class="top">Image Path*
+        <input type="text" name="inv_image" required value="<%= locals.inv_image %>">
+      </label>
+      
+      <label class="top">Thumbnail Path*
+        <input type="text" name="inv_thumbnail" required value="<%= locals.inv_thumbnail %>">
+      </label>
+      
+      <label class="top">Price*
+        <input type="number" name="inv_price" required step="any" placeholder="Decimal or Integer" value="<%= locals.inv_price %>">
+      </label>
+      
+      <label class="top">Year*
+        <input type="number" name="inv_year" required placeholder="4-digit year" value="<%= locals.inv_year %>">
+      </label>
+      
+      <label class="top">Miles*
+        <input type="number" name="inv_miles" required placeholder="Digits only" value="<%= locals.inv_miles %>">
+      </label>
+      
+      <label class="top">Color*
+        <input type="text" name="inv_color" required value="<%= locals.inv_color %>">
+      </label>
+
+      <input type="hidden" name="inv_id"
+      <% if(locals.inv_id) { %> value="<%= locals.inv_id %>"
+      <% } %>>
+
+      <input type="submit" value="Update Vehicle" class="submitBtn">
+    </fieldset>
+  </form>
+</div>
