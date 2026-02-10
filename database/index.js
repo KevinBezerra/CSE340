@@ -1,12 +1,6 @@
 const { Pool } = require("pg")
 require("dotenv").config()
 
-/* ***************
- * Connection Pool
- * SSL Object needed for local testing of app
- * But will cause problems in production environment
- * If - else will make determination which to use
- * *************** */
 let pool
 
 if (process.env.NODE_ENV == "development") {
@@ -26,15 +20,14 @@ if (process.env.NODE_ENV == "development") {
   })
 }
 
-// Export the wrapper for BOTH environments
-// This ensures you see "error in query" in your Render logs
+// WRAPPER: This ensures we see errors in the Render logs!
 module.exports = {
   async query(text, params) {
     try {
       const res = await pool.query(text, params)
-      // console.log("executed query", { text }) // Uncomment to see all queries in logs
       return res
     } catch (error) {
+      // THIS is the message you are looking for in the logs
       console.error("error in query", { text })
       throw error
     }
