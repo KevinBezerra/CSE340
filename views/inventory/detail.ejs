@@ -5,3 +5,21 @@
     <% } %>
     
     <%- grid %>
+
+<% if (locals.loggedin) { %>
+  <div class="favorite-controls">
+    <% if (locals.isFavorite) { %>
+      <form action="/account/favorites/remove" method="post">
+        <input type="hidden" name="inv_id" value="<%= locals.inv_id %>">
+        <button type="submit">Remove from Favorites</button>
+      </form>
+    <% } else { %>
+      <form action="/account/favorites/add" method="post">
+        <input type="hidden" name="inv_id" value="<%= locals.inv_id %>">
+        <button type="submit">Add to Favorites</button>
+      </form>
+    <% } %>
+  </div>
+<% } else { %>
+  <p><a href="/account/login">Log in</a> to save this vehicle to your favorites.</p>
+<% } %>

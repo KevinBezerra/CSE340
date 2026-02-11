@@ -1,0 +1,36 @@
+<% if (title) { %>
+  <h1><%= title %></h1>
+<% } else { %>
+  <script>window.location.href = "/"</script>
+<% } %>
+
+<%- messages() %>
+
+<% if (favorites && favorites.length > 0) { %>
+  <ul id="inv-display">
+    <% favorites.forEach(item => { %>
+      <li>
+        <a href="/inv/detail/<%= item.inv_id %>" title="View <%= item.inv_make %> <%= item.inv_model %> details">
+          <img src="<%= item.inv_thumbnail %>" alt="Image of <%= item.inv_make %> <%= item.inv_model %> on CSE Motors" />
+        </a>
+        <div class="namePrice">
+          <hr />
+          <h2>
+            <a href="/inv/detail/<%= item.inv_id %>" title="View <%= item.inv_make %> <%= item.inv_model %> details">
+              <%= item.inv_make %> <%= item.inv_model %>
+            </a>
+          </h2>
+          <span>$<%= new Intl.NumberFormat('en-US').format(item.inv_price) %></span>
+          <form action="/account/favorites/remove" method="post">
+            <input type="hidden" name="inv_id" value="<%= item.inv_id %>">
+            <button type="submit">Remove</button>
+          </form>
+        </div>
+      </li>
+    <% }) %>
+  </ul>
+<% } else { %>
+  <p class="notice">You don’t have any favorites yet. Browse inventory and add some!</p>
+<% } %>
+
+<p><a href="/account/">Back to Account Management</a></p>

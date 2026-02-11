@@ -4,6 +4,7 @@ const router = new express.Router()
 const utilities = require("../utilities/")
 const accountController = require("../controllers/accountController")
 const regValidate = require('../utilities/account-validation')
+const favValidate = require('../utilities/favorites-validation')
 
 // Route to build login view
 router.get("/login", utilities.handleErrors(accountController.buildLogin))
@@ -22,6 +23,23 @@ router.post(
 
 // Route to build account management view
 router.get("/", utilities.checkLogin, utilities.handleErrors(accountController.buildManagement))
+
+// Favorites (Final Enhancement)
+router.get("/favorites", utilities.checkLogin, utilities.handleErrors(accountController.buildFavorites))
+router.post(
+  "/favorites/add",
+  utilities.checkLogin,
+  favValidate.favoriteRules(),
+  favValidate.checkFavoriteData,
+  utilities.handleErrors(accountController.addFavorite)
+)
+router.post(
+  "/favorites/remove",
+  utilities.checkLogin,
+  favValidate.favoriteRules(),
+  favValidate.checkFavoriteData,
+  utilities.handleErrors(accountController.removeFavorite)
+)
 
 // Route to logout
 router.get("/logout", utilities.handleErrors(accountController.accountLogout))

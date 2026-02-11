@@ -1,5 +1,6 @@
 const utilities = require("../utilities/")
 const accountModel = require("../models/account-model")
+const favModel = require("../models/favorites-model")
 const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
 require("dotenv").config()
@@ -133,6 +134,59 @@ async function buildManagement(req, res, next) {
 }
 
 /* ****************************************
+ * Deliver Favorites View (Final Enhancement)
+ * *************************************** */
+async function buildFavorites(req, res, next) {
+  let nav = await utilities.getNav()
+  const account_id = res.locals.accountData.account_id
+  const favorites = await favModel.getFavoritesByAccountId(account_id)
+  res.render("account/favorites", {
+    title: "My Favorites",
+    nav,
+    errors: null,
+    favorites,
+  })
+}
+
+/* ****************************************
+ * Add Favorite
+ * *************************************** */
+async function addFavorite(req, res, next) {
+  const account_id = res.locals.accountData.account_id
+  const inv_id = parseInt(req.body.inv_id)
+
+  const result = await favModel.addFavorite(account_id, inv_id)
+  if (result && !result.message) {
+    req.flash("notice", "Vehicle added to favorites.")
+  } else {
+    // If it already exists, ON CONFLICT returns nothing. Treat it as OK.
+    req.flash("notice", "That vehicle is already in your favorites.")
+  }
+  return res.redirect(`/inv/detail/${inv_id}`)
+}
+
+/* ****************************************
+ * Remove Favorite
+ * *************************************** */
+async function removeFavorite(req, res, next) {
+  const account_id = res.locals.accountData.account_id
+  const inv_id = parseInt(req.body.inv_id)
+
+  const result = await favModel.removeFavorite(account_id, inv_id)
+  if (result && !result.message) {
+    req.flash("notice", "Vehicle removed from favorites.")
+  } else {
+    req.flash("notice", "Unable to remove favorite. Please try again.")
+  }
+  // If they removed from vehicle detail, go back there; if removed from list, go back to list.
+  const backURL = req.get("Referrer")
+  if (backURL && backURL.includes("/account/favorites")) {
+    return res.redirect("/account/favorites")
+  }
+  return res.redirect(`/inv/detail/${inv_id}`)
+}
+
+/* ****************************************
  * Process Logout
  * *************************************** */
 async function accountLogout(req, res) {
@@ -244,4 +298,17 @@ async function changePassword(req, res, next) {
   }
 }
 
-module.exports = { buildLogin, buildRegister, registerAccount, accountLogin, buildManagement, accountLogout, buildAccountUpdate, updateAccount, changePassword }
+module.exports = { 
+  buildLogin, 
+  buildRegister, 
+  registerAccount, 
+  accountLogin, 
+  buildManagement, 
+  buildFavorites,
+  addFavorite,
+  removeFavorite,
+  accountLogout, 
+  buildAccountUpdate, 
+  updateAccount, 
+  changePassword 
+}
