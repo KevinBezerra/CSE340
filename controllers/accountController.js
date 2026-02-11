@@ -116,7 +116,14 @@ async function accountLogin(req, res) {
     })
    }
   } catch (error) {
-   return new Error('Access Forbidden')
+   console.error("Login error caught:", error); 
+    req.flash("notice", "An unexpected server error occurred during login.");
+    res.status(500).render("account/login", {
+      title: "Login",
+      nav,
+      errors: null,
+      account_email,
+    });
   }
 }
 
